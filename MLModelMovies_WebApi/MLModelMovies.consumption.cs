@@ -5,42 +5,12 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using MLModelMovies_WebApi.Models;
+
 namespace MLModelMovies_WebApi
 {
     public partial class MLModelMovies
     {
-        /// <summary>
-        /// model input class for MLModelMovies.
-        /// </summary>
-        #region model input class
-        public class ModelInput
-        {
-            [ColumnName(@"userId")]
-            public float UserId { get; set; }
-
-            [ColumnName(@"movieId")]
-            public float MovieId { get; set; }
-
-            [ColumnName(@"rating")]
-            public float Rating { get; set; }
-
-            [ColumnName(@"timestamp")]
-            public string Timestamp { get; set; }
-
-        }
-
-        #endregion
-
-        /// <summary>
-        /// model output class for MLModelMovies.
-        /// </summary>
-        #region model output class
-        public class ModelOutput
-        {
-            public float Score { get; set; }
-        }
-        #endregion
-
         private static string MLNetModelPath = Path.GetFullPath("MLModelMovies.zip");
 
         public static readonly Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);

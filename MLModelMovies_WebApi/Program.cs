@@ -5,11 +5,12 @@ using Microsoft.Extensions.ML;
 using Microsoft.OpenApi.Models;
 using MLModelMovies_WebApi;
 using System.Threading.Tasks;
+using MLModelMovies_WebApi.Models;
 
 // Configure app
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPredictionEnginePool<MLModelMovies.ModelInput, MLModelMovies.ModelOutput>()
+builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>()
     .FromFile("MLModelMovies.zip");
 builder.Services.AddEndpointsApiExplorer();
 
@@ -28,7 +29,7 @@ app.UseSwaggerUI(c =>
 
 // Define prediction route & handler
 app.MapPost("/predict",
-    async (PredictionEnginePool<MLModelMovies.ModelInput, MLModelMovies.ModelOutput> predictionEnginePool, MLModelMovies.ModelInput input) =>
+    async (PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, ModelInput input) =>
         await Task.FromResult(predictionEnginePool.Predict(input)));
 
 // Run app

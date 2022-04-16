@@ -6,18 +6,21 @@ using Microsoft.OpenApi.Models;
 using MLModelMovies_WebApi;
 using System.Threading.Tasks;
 using MLModelMovies_WebApi.Models;
+using Microsoft.Extensions.Hosting;
 
 // Configure app
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>()
     .FromFile("MLModelMovies.zip");
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Description = "Docs for my API", Version = "v1" });
 });
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -26,6 +29,14 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 });
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapControllers();
 
 // Define prediction route & handler
 app.MapPost("/predict",

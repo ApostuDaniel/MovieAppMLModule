@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>()
-    .FromFile("MLModelMovies.zip");
+    .FromFile(modelName: "MovieRecommendationsModel", "MLModelMovies.zip", true);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -25,23 +25,18 @@ var app = builder.Build();
 
 app.UseSwagger();
 
-app.UseSwaggerUI(c =>
+app.UseSwaggerUI(options =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    options.RoutePrefix = string.Empty;
 });
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapControllers();
 
 // Define prediction route & handler
-app.MapPost("/predict",
-    async (PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, ModelInput input) =>
-        await Task.FromResult(predictionEnginePool.Predict(input)));
+//app.MapPost("/predict",
+//    async (PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, ModelInput input) =>
+//        await Task.FromResult(predictionEnginePool.Predict(input)));
 
 // Run app
 app.Run();

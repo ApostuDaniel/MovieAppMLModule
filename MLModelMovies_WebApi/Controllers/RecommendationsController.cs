@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ML;
 using MLModelMovies_WebApi.Models;
+using MLModelMovies_WebApi.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,10 +22,20 @@ namespace MLModelMovies_WebApi.Controllers
 
 
         [HttpPost("predictions/{numberOfPredictions:long}", Name = "multipleMoviePredictions")]
-        public async Task<IEnumerable<long>> GetRecommendations([FromServices] PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, [FromRoute]int numberOfPredictions, [FromBody]IEnumerable<ModelInput> ratedMovies)
+        public async Task<ActionResult<IEnumerable<long>>> GetRecommendations([FromServices] PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, [FromRoute]int numberOfPredictions, [FromBody]IEnumerable<ModelInput> ratedMovies)
         {
-            //test code for the api endpoint
-            List<ModelInput> rated = new List<ModelInput>(ratedMovies);
+            //test code for the api endpoint, to be removed
+            List<ModelInput> rated = new(ratedMovies);
+            try
+            {
+                if (numberOfPredictions < 1) throw new ArgumentException("The request needs to be made for at least on predition");
+                InputValidator.ValidateUserRatings(rated);
+            }
+            catch (ArgumentException ex) {
+                _logger.LogError(ex.Message);
+                return StatusCode(422);
+            }
+            
             return new List<long> { numberOfPredictions, rated.Count };
         }
 

@@ -7,11 +7,40 @@ using System.Threading.Tasks;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
 using Microsoft.ML;
+using MLModelMovies_WebApi.Models;
+using MLModelMovies_WebApi.Utils;
+using Microsoft.ML.Trainers.Recommender;
 
 namespace MLModelMovies_WebApi
 {
     public partial class MLModelMovies
     {
+        /// <summary>
+        /// Method used for retraining the current model with data from userRatings and obtaining a prediction engine
+        /// from the retrained model. Method is subject to change
+        /// </summary>
+        /// <param name="userRatings">ratings used for retraining</param>
+        /// <returns>a prediction engine that can be used for a single prediction</returns>
+        /// With the current ML model, Matrix Factorization, retraining is imposible without wiping out the already trained model, method was used just
+        /// for testing
+        public static PredictionEngine<ModelInput, ModelOutput> RetrainingForNewUser(List<ModelInput> userRatings)
+        {
+            var ratings = UtilsClass.AdjustUserId(userRatings);
+
+            //load the existing model
+            var mlContext = new MLContext();
+            var currentModel = mlContext.Model.Load(MLNetModelPath, out var _);
+
+            //prepare the training data
+            IDataView newData = mlContext.Data.LoadFromEnumerable(ratings);
+            
+            //create a retrained model
+            var retrainedModel = RetrainPipeline(mlContext, newData);
+
+            return mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(retrainedModel);
+            //mlContext.Model.Save(retrainedModel, newData.Schema, MLNetModelPath);
+        }
+
         public static ITransformer RetrainPipeline(MLContext context, IDataView trainData)
         {
             var pipeline = BuildPipeline(context);

@@ -10,15 +10,18 @@ using Microsoft.Extensions.Hosting;
 
 // Configure app
 var builder = WebApplication.CreateBuilder(args);
-
+//adding the prediction engine pool as a service, loaded from MLModelMovies.zip, so that it can be injected in the controller
+//when changes to the model are detected, the prediction engine pool will also update
 builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>()
     .FromFile(modelName: "MovieRecommendationsModel", "MLModelMovies.zip", true);
+builder.Services.AddLogging();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+//configuring the API documnetation with swagger
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Description = "Docs for my API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Movie App ML API", Description = "Docs for the API providing access to movie recommendations", Version = "v1" });
 });
 
 var app = builder.Build();
@@ -27,10 +30,11 @@ app.UseSwagger();
 
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Movie App ML API");
     options.RoutePrefix = string.Empty;
 });
 
+//Mapping controllers endpoint routes
 app.MapControllers();
 
 // Define prediction route & handler

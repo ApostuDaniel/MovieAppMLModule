@@ -4,8 +4,17 @@ using System;
 
 namespace MLModelMovies_WebApi.Utils
 {
+    /// <summary>
+    /// Class used to store validation methods
+    /// </summary>
     public class InputValidator
     {
+        /// <summary>
+        /// Method for validating that a list of ratings belong to the same user, and that all values are in range
+        /// </summary>
+        /// <param name="ratedMovies">A list of user ratings</param>
+        /// <exception cref="ArgumentException"></exception>
+        /// TODO: Use FLUENT VALIDATION for validation
         public static void ValidateUserRatings(List<ModelInput> ratedMovies)
         {
             if (ratedMovies.Count == 0) throw new ArgumentException("The user needs to have at least one rated movie");

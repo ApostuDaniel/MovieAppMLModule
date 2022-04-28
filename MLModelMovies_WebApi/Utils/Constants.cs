@@ -1,7 +1,13 @@
 ﻿namespace MLModelMovies_WebApi.Utils
 {
+    /// <summary>
+    /// Static class for holding contants used throughout the app
+    /// </summary>
     public static class Constants
     {
-        public const long trainingDataLastUser = 138493;
+        /// <summary>
+        /// The last user in the training database, each new user's id should be incremented by this value
+        /// </summary>
+        public const float trainingDataLastUser = 138493f;
     }
 }
